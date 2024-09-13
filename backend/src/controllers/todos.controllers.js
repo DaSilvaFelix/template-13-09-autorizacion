@@ -1,12 +1,8 @@
 import { database } from "../db/database.js";
 
 export const getAlltodos = (req, res) => {
-  console.log(req.user);
-
   const todos = database.todos;
   const data = todos.map((todo) => ({ ...todo, owner: req.user.id }));
-  console.log(data);
-
   res.json({ data });
 };
 
@@ -28,12 +24,20 @@ export const deleteTodos = (req, res) => {
 
 export const updateTodos = (req, res) => {
   try {
-    const { id } = req.params.id;
+    const id = parseInt(req.params.id);
     const { title, completed } = req.body;
     const todo = database.todos;
-    const index = todo.findIndex((e) => {
-      return e.id == id;
+    console.log(todo);
+    const index = todo.findIndex((element) => {
+      return element.id === id;
     });
-    console.log(index);
-  } catch (error) {}
+    todo[index].title = title;
+    todo[index].completed = completed;
+    console.log(todo);
+    res.status(200).json({
+      message: "registro actualizado correctament",
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
