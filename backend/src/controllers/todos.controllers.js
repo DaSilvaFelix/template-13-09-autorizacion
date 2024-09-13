@@ -3,6 +3,8 @@ import { database } from "../db/database.js";
 export const getAlltodos = (req, res) => {
   const todos = database.todos;
   const data = todos.map((todo) => ({ ...todo, owner: req.user.id }));
+  console.log(data);
+
   res.json({ data });
 };
 

@@ -100,10 +100,20 @@ export const todosPage = () => {
         td4.classList.add("border", "px-4", "py-2");
         td4.textContent = todo.owner;
 
+        const td5 = document.createElement("td");
+        td5.classList.add("border", "px-4", "py-2");
+        td5.innerHTML = `<button id="btn-${todo.id}" >actualizar</button>`;
+
+        const td6 = document.createElement("td");
+        td6.classList.add("border", "px-4", "py-2");
+        td6.innerHTML = `<button id="btn-${todo.id}" >Eliminar</button>`;
+
         tr.appendChild(td1);
         tr.appendChild(td2);
         tr.appendChild(td3);
         tr.appendChild(td4);
+        tr.appendChild(td5);
+        tr.appendChild(td6);
         tbody.appendChild(tr);
       });
     });
