@@ -3,6 +3,7 @@ import generarJwt from "../helpers/generar-jwt.js";
 
 export const signInCtrl = async (req, res) => {
   const { username, password } = req.body;
+  console.log(username, password);
 
   try {
     const user = database.user.find(

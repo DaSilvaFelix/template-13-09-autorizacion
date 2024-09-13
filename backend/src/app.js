@@ -11,7 +11,7 @@ import { authRouter } from "./routes/auth.routes.js";
 import { todosRouter } from "./routes/todos.routes.js";
 
 const app = express();
-
+// s  app.use(cors());
 app.use(
   cors({
     origin: [
@@ -37,8 +37,8 @@ app.use(
 );
 
 // routes
-app.use("/auth", authRouter);
-app.use("/todos", todosRouter);
+app.use("todo", authRouter);
+app.use("/auth", todosRouter);
 
 // Servidor escuchando
 app.listen(PORT, () => {
