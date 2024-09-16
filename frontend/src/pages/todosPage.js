@@ -11,6 +11,7 @@ export const todosPage = () => {
   );
 
   const btnHome = document.createElement("button");
+  const btnCreateTodo = document.createElement("button");
 
   btnHome.classList.add(
     "bg-blue-500",
@@ -21,7 +22,38 @@ export const todosPage = () => {
     "mb-4"
   );
 
+  btnCreateTodo.classList.add(
+    "bg-blue-500",
+    "text-white",
+    "p-2",
+    "rounded",
+    "hover:bg-blue-600",
+    "mb-4"
+  );
+
   btnHome.textContent = "Home";
+  btnCreateTodo.textContent = "create a Todo";
+
+  btnCreateTodo.addEventListener("click", async () => {
+    let titles = prompt("ingrese el nuevo titulo porfavor");
+    let completeds = Boolean(
+      prompt(
+        "ingrese ( 1 ) si desea marcar como completado\n si no se completo ponga ( 0 )"
+      )
+    );
+    const envio = await fetch("http://localhost:4000/todos/", {
+      method: "POST",
+      headers: { "Content-Type": "Application/json" },
+      body: JSON.stringify({
+        title: titles,
+        completed: completeds,
+      }),
+      credentials: "include",
+    });
+    const res = await envio.json();
+    alert(res.message);
+    window.location.reload();
+  });
 
   btnHome.addEventListener("click", () => {
     window.location.pathname = "/home";
@@ -74,12 +106,13 @@ export const todosPage = () => {
   table.appendChild(tbody);
 
   container.appendChild(btnHome);
+  container.appendChild(btnCreateTodo);
   fetch("http://localhost:4000/todos", {
     credentials: "include",
   })
     .then((response) => response.json())
     .then((data) => {
-      data.data.forEach((todo) => {
+      data.data.forEach(async (todo) => {
         if (todo.id > 10) return;
 
         const tr = document.createElement("tr");
@@ -102,11 +135,11 @@ export const todosPage = () => {
 
         const td5 = document.createElement("td");
         td5.classList.add("border", "px-4", "py-2");
-        td5.innerHTML = `<button id="btn-${todo.id}" >actualizar</button>`;
+        td5.innerHTML = `<button id="update-${todo.id}" >actualizar</button>`;
 
         const td6 = document.createElement("td");
         td6.classList.add("border", "px-4", "py-2");
-        td6.innerHTML = `<button id="btn-${todo.id}" >Eliminar</button>`;
+        td6.innerHTML = `<button id="delete-${todo.id}" >Eliminar</button>`;
 
         tr.appendChild(td1);
         tr.appendChild(td2);
@@ -115,6 +148,44 @@ export const todosPage = () => {
         tr.appendChild(td5);
         tr.appendChild(td6);
         tbody.appendChild(tr);
+
+        const deleteT = (element) => {
+          element.addEventListener("click", async (e) => {
+            e.preventDefault();
+            const res = await fetch(`http://localhost:4000/todos/${todo.id}`, {
+              method: "DELETE",
+              credentials: "include",
+            });
+            const resJson = await res.json();
+            location.reload();
+            alert(resJson.message);
+          });
+        };
+        deleteT(document.getElementById(`delete-${todo.id}`));
+
+        const updateT = (element) => {
+          element.addEventListener("click", async () => {
+            let titles = prompt("ingrese el nuevo titulo porfavor");
+            let completeds = Boolean(
+              prompt(
+                "ingrese ( 1 ) si desea marcar como completado\n si no se completo ponga ( 0 )"
+              )
+            );
+            const envio = await fetch(
+              `http://localhost:4000/todos/${todo.id}`,
+              {
+                method: "PUT",
+                credentials: "include",
+                headers: { "Content-type": "Application/json" },
+                body: JSON.stringify({ title: titles, completed: completeds }),
+              }
+            );
+            const res = await envio.json();
+            alert(res.message);
+            location.reload();
+          });
+        };
+        updateT(document.getElementById(`update-${todo.id}`));
       });
     });
 
