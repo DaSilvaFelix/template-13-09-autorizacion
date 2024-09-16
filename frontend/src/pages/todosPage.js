@@ -112,81 +112,88 @@ export const todosPage = () => {
   })
     .then((response) => response.json())
     .then((data) => {
-      data.data.forEach(async (todo) => {
-        if (todo.id > 10) return;
+      const mostarLosPrimeros = () => {
+        let primeros10 = data.data.slice(0, 10);
+        primeros10.forEach(async (todo) => {
+          const tr = document.createElement("tr");
 
-        const tr = document.createElement("tr");
+          const td1 = document.createElement("td");
+          td1.classList.add("border", "px-4", "py-2");
+          td1.textContent = todo.id;
 
-        const td1 = document.createElement("td");
-        td1.classList.add("border", "px-4", "py-2");
-        td1.textContent = todo.id;
+          const td2 = document.createElement("td");
+          td2.classList.add("border", "px-4", "py-2");
+          td2.textContent = todo.title;
 
-        const td2 = document.createElement("td");
-        td2.classList.add("border", "px-4", "py-2");
-        td2.textContent = todo.title;
+          const td3 = document.createElement("td");
+          td3.classList.add("border", "px-4", "py-2");
+          td3.textContent = todo.completed ? "Sí" : "No";
 
-        const td3 = document.createElement("td");
-        td3.classList.add("border", "px-4", "py-2");
-        td3.textContent = todo.completed ? "Sí" : "No";
+          const td4 = document.createElement("td");
+          td4.classList.add("border", "px-4", "py-2");
+          td4.textContent = todo.owner;
 
-        const td4 = document.createElement("td");
-        td4.classList.add("border", "px-4", "py-2");
-        td4.textContent = todo.owner;
+          const td5 = document.createElement("td");
+          td5.classList.add("border", "px-4", "py-2");
+          td5.innerHTML = `<button id="update-${todo.id}" >actualizar</button>`;
 
-        const td5 = document.createElement("td");
-        td5.classList.add("border", "px-4", "py-2");
-        td5.innerHTML = `<button id="update-${todo.id}" >actualizar</button>`;
+          const td6 = document.createElement("td");
+          td6.classList.add("border", "px-4", "py-2");
+          td6.innerHTML = `<button id="delete-${todo.id}" >Eliminar</button>`;
 
-        const td6 = document.createElement("td");
-        td6.classList.add("border", "px-4", "py-2");
-        td6.innerHTML = `<button id="delete-${todo.id}" >Eliminar</button>`;
-
-        tr.appendChild(td1);
-        tr.appendChild(td2);
-        tr.appendChild(td3);
-        tr.appendChild(td4);
-        tr.appendChild(td5);
-        tr.appendChild(td6);
-        tbody.appendChild(tr);
-
-        const deleteT = (element) => {
-          element.addEventListener("click", async (e) => {
-            e.preventDefault();
-            const res = await fetch(`http://localhost:4000/todos/${todo.id}`, {
-              method: "DELETE",
-              credentials: "include",
+          tr.appendChild(td1);
+          tr.appendChild(td2);
+          tr.appendChild(td3);
+          tr.appendChild(td4);
+          tr.appendChild(td5);
+          tr.appendChild(td6);
+          tbody.appendChild(tr);
+          const deleteT = (element) => {
+            element.addEventListener("click", async (e) => {
+              e.preventDefault();
+              const res = await fetch(
+                `http://localhost:4000/todos/${todo.id}`,
+                {
+                  method: "DELETE",
+                  credentials: "include",
+                }
+              );
+              const resJson = await res.json();
+              location.reload();
+              alert(resJson.message);
             });
-            const resJson = await res.json();
-            location.reload();
-            alert(resJson.message);
-          });
-        };
-        deleteT(document.getElementById(`delete-${todo.id}`));
+          };
+          deleteT(document.getElementById(`delete-${todo.id}`));
 
-        const updateT = (element) => {
-          element.addEventListener("click", async () => {
-            let titles = prompt("ingrese el nuevo titulo porfavor");
-            let completeds = Boolean(
-              prompt(
-                "ingrese ( 1 ) si desea marcar como completado\n si no se completo ponga ( 0 )"
-              )
-            );
-            const envio = await fetch(
-              `http://localhost:4000/todos/${todo.id}`,
-              {
-                method: "PUT",
-                credentials: "include",
-                headers: { "Content-type": "Application/json" },
-                body: JSON.stringify({ title: titles, completed: completeds }),
-              }
-            );
-            const res = await envio.json();
-            alert(res.message);
-            location.reload();
-          });
-        };
-        updateT(document.getElementById(`update-${todo.id}`));
-      });
+          const updateT = (element) => {
+            element.addEventListener("click", async () => {
+              let titles = prompt("ingrese el nuevo titulo porfavor");
+              let completeds = Boolean(
+                prompt(
+                  "ingrese ( 1 ) si desea marcar como completado\n si no se completo ponga ( 0 )"
+                )
+              );
+              const envio = await fetch(
+                `http://localhost:4000/todos/${todo.id}`,
+                {
+                  method: "PUT",
+                  credentials: "include",
+                  headers: { "Content-type": "Application/json" },
+                  body: JSON.stringify({
+                    title: titles,
+                    completed: completeds,
+                  }),
+                }
+              );
+              const res = await envio.json();
+              alert(res.message);
+              location.reload();
+            });
+          };
+          updateT(document.getElementById(`update-${todo.id}`));
+        });
+      };
+      mostarLosPrimeros();
     });
 
   container.appendChild(title);
